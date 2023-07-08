@@ -1,10 +1,6 @@
 import {
   Component,
-  ElementRef,
-  Input,
   OnInit,
-  ViewChild,
-  AfterViewInit,
 } from '@angular/core';
 import * as THREE from 'three';
 @Component({
@@ -12,81 +8,97 @@ import * as THREE from 'three';
   templateUrl: './cube.component.html',
   styleUrls: ['./cube.component.scss'],
 })
-export class CubeComponent implements OnInit, AfterViewInit {
-  
-  @ViewChild('canvas') private canvasRef: ElementRef;
+export class CubeComponent implements OnInit {
+  constructor() {}
 
-  //* Cube Properties
-  @Input() public rotationSpeedX: number = 0.05;
-  @Input() public rotationSpeedY: number = 0.01;
-  @Input() public size: number = 200;
-  @Input() public texture: string = '/assets/texture.jpg';
-
-  //* Stage Properties
-  @Input() public cameraZ: number = 400;
-  @Input() public fieldOfView: number = 1;
-  @Input('nearClipping') public nearClippingPlane: number = 1;
-  @Input('farClipping') public farClippingPlane: number = 1000;
-
-  public scene: any = null;
-  public renderer: any = null;
-  public camera: any = null;
-  /**
-   * Create the scene
-   *
-   * @private
-   * @memberof CubeComponent
-   */
-  private createScene() {
-    //* Scene
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x000000);
-    this.scene.add(this.cube);
-
-    //* Camera
-    let aspectRatio = this.getAspectRatio();
-    this.camera = new THREE.PerspectiveCamera(
-      this.fieldOfView,
-      aspectRatio,
-      this.nearClippingPlane,
-      this.farClippingPlane
-    )
-    this.camera.position.z = this.cameraZ
+  ngOnInit(): void {
+    this.createThreeJsBox();
   }
-  private getAspectRatio() {
-    return this.canvasRef.clientWidth / this.canvasRef.clientHeight;
-  }
-  /**
-   * Animate the cube
-   * 
-   * @private
-   * @memberof CubeComponent
-   */
-  private animateCube() {
-    this.cube.rotation.x += this.rotationSpeedX;
-    this.cube.rotation.y += this.rotationSpeedY;
-  }
-  /**
-   * Start the rendering loop
-   * 
-   * @private
-   * @memberof CubeComponent
-   */
-  private startRenderingLoop() {
-    //* Renderer
-    this.renderer = new THREE.WebGLRenderer({canvas: this.canvas});
-    this.renderer.setPixelRatio(devicePixelRatio);
-    this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
 
-    let component: CubeComponent = this;
-    (function render() {
-      requestAnimationFrame(render);
-      component.animateCube()
-      component.renderer.render(component.createScene, component.camera)
-    }());
-  }
-  ngAfterViewInit(): void {
-    this.createScene();
-    this.startRenderingLoop();
+  createThreeJsBox(): void {
+    const canvas = document.getElementById('canvas-box');
+
+    const scene = new THREE.Scene();
+
+    const material = new THREE.MeshToonMaterial();
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0xffffff, 0.5);
+    pointLight.position.x = 2;
+    pointLight.position.y = 2;
+    pointLight.position.z = 2;
+    scene.add(pointLight);
+
+    const box = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), material);
+
+    const torus = new THREE.Mesh(
+      new THREE.TorusGeometry(5, 1.5, 16, 100),
+      material
+    );
+
+    scene.add(torus, box);
+    console.log(window.innerWidth)
+    console.log(window.innerHeight)
+    console.log(window)
+    
+    const canvasSizes = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      canvasSizes.width / canvasSizes.height,
+      0.001,
+      1000
+    );
+    camera.position.z = 30;
+    scene.add(camera);
+
+    if (!canvas) {
+      return;
+    }
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+    });
+    renderer.setClearColor(0xe232222, 1);
+    renderer.setSize(canvasSizes.width, canvasSizes.height);
+
+    window.addEventListener('resize', () => {
+      canvasSizes.width = window.innerWidth;
+      canvasSizes.height = window.innerHeight;
+
+      camera.aspect = canvasSizes.width / canvasSizes.height;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(canvasSizes.width, canvasSizes.height);
+      renderer.render(scene, camera);
+    });
+
+    const clock = new THREE.Clock();
+
+    const animateGeometry = () => {
+      const elapsedTime = clock.getElapsedTime();
+
+      // Update animaiton objects
+      box.rotation.x = elapsedTime;
+      box.rotation.y = elapsedTime;
+      box.rotation.z = elapsedTime;
+
+      torus.rotation.x = -elapsedTime;
+      torus.rotation.y = -elapsedTime;
+      torus.rotation.z = -elapsedTime;
+
+      // Render
+      renderer.render(scene, camera);
+
+      // Call tick again on the next frame
+      window.requestAnimationFrame(animateGeometry);
+    };
+
+    animateGeometry();
   }
 }
