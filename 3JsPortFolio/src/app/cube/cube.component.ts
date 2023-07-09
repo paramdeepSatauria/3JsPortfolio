@@ -21,6 +21,7 @@ export class CubeComponent implements OnInit {
     const scene = new THREE.Scene();
 
     const material = new THREE.MeshToonMaterial();
+    
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
@@ -39,9 +40,6 @@ export class CubeComponent implements OnInit {
     );
 
     scene.add(torus, box);
-    console.log(window.innerWidth)
-    console.log(window.innerHeight)
-    console.log(window)
     
     const canvasSizes = {
       width: window.innerWidth,
