@@ -21,6 +21,7 @@
     "@types/three": "^0.152.1",
     "rxjs": "~7.8.0",
     "three": "^0.154.0",
+    "three-addons": "^1.2.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
   },
@@ -29,6 +30,7 @@
     "@angular/cli": "~15.1.1",
     "@angular/compiler-cli": "^15.1.0",
     "@types/jasmine": "~4.3.0",
+    "@types/node": "^20.4.1",
     "autoprefixer": "^10.4.14",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.0",
