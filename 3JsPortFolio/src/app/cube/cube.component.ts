@@ -1,8 +1,6 @@
-import {
-  Component,
-  OnInit,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as THREE from 'three';
+
 @Component({
   selector: 'app-cube',
   templateUrl: './cube.component.html',
@@ -21,7 +19,6 @@ export class CubeComponent implements OnInit {
     const scene = new THREE.Scene();
 
     const material = new THREE.MeshToonMaterial();
-    
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
@@ -40,19 +37,19 @@ export class CubeComponent implements OnInit {
     );
 
     scene.add(torus, box);
-    
+
     const canvasSizes = {
       width: window.innerWidth,
       height: window.innerHeight,
     };
 
     const camera = new THREE.PerspectiveCamera(
-      75,
+      60,
       canvasSizes.width / canvasSizes.height,
       0.001,
       1000
     );
-    camera.position.z = 30;
+    camera.position.z = 50;
     scene.add(camera);
 
     if (!canvas) {
